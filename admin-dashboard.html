@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Marketplace</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 260px;
+            background-color: var(--secondary-color);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        .main-content {
+            flex-grow: 1;
+            margin-left: 260px;
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+        .sidebar-brand {
+            padding: 20px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: white !important;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none;
+            display: block;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+            margin: 0;
+        }
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+            border-left: 3px solid var(--primary-color);
+        }
+        .sidebar-menu li a i {
+            width: 24px;
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        .topbar {
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stat-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(37,99,235,0.05) 100%);
+        }
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+        }
+        .stat-info h4 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        .stat-info p {
+            color: var(--secondary-text-color);
+            margin-bottom: 0;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .table-custom th {
+            font-weight: 600;
+            color: var(--secondary-text-color);
+            background-color: #f8fafc;
+            border-bottom: 1px solid var(--border-color);
+        }
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <a href="index.html" class="sidebar-brand">Admin<span style="color:var(--primary-color);">Panel</span></a>
+            <div class="px-4 py-3 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+                <div class="d-flex align-items-center">
+                    <img src="https://ui-avatars.com/api/?name=Super+Admin&background=16A34A&color=fff" class="rounded-circle me-2" width="40" alt="Admin">
+                    <div>
+                        <h6 class="mb-0 fs-6 text-white">Super Admin</h6>
+                    </div>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#dashboard" class="sidebar-link active" data-target="dashboard" data-title="Platform Overview"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#users" class="sidebar-link" data-target="users" data-title="User Management"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="#vendors" class="sidebar-link" data-target="vendors" data-title="Vendors Management"><i class="fas fa-store"></i> Vendors <span class="badge bg-danger ms-auto" id="pending-vendors-badge" style="display: none;">0</span></a></li>
+                <li><a href="#categories" class="sidebar-link" data-target="categories" data-title="Product Categories"><i class="fas fa-tags"></i> Categories</a></li>
+                <li><a href="#products" class="sidebar-link" data-target="products" data-title="Products List"><i class="fas fa-box"></i> Products</a></li>
+                <li><a href="#orders" class="sidebar-link" data-target="orders" data-title="Order History"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+                <li><a href="#payouts" class="sidebar-link" data-target="payouts" data-title="Vendor Payouts"><i class="fas fa-money-bill-wave"></i> Payouts</a></li>
+                <li><a href="#settings" class="sidebar-link" data-target="settings" data-title="Platform Settings"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="#" class="text-danger mt-4" id="adminLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-light d-lg-none me-3" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+                    <h4 class="mb-0 fs-5 d-none d-sm-block" id="pageTitle">Platform Overview</h4>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="#" class="nav-icon position-relative text-secondary-custom">
+                        <i class="far fa-bell"></i>
+                        <span class="badge rounded-pill badge-notification">12</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- DASHBOARD SECTION -->
+            <div id="dashboard" class="content-section">
+                <!-- Stats Row -->
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4 id="stat-revenue">৳ 0</h4>
+                                <p>Total Platform Revenue</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-success bg-opacity-10 text-success">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4 id="stat-vendors">0</h4>
+                                <p>Total Vendors</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-info bg-opacity-10 text-info">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4 id="stat-users">0</h4>
+                                <p>Registered Users</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                                <i class="fas fa-percent"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4 id="stat-commission">৳ 0</h4>
+                                <p>Commission Earned</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <!-- Pending Vendors -->
+                    <div class="col-lg-12">
+                        <div class="bg-surface p-4 rounded-4 shadow-sm border-custom">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="mb-0 fs-5">Pending Vendor Approvals</h5>
+                                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover table-custom mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Store Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Applied Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pending-vendors-table-body">
+                                        <tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- USERS SECTION -->
+            <div id="users" class="content-section" style="display: none;">
+                <div class="bg-surface p-4 rounded-4 shadow-sm border-custom mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0 fs-5"><i class="fas fa-users text-secondary-custom me-2"></i> All Users</h5>
+                        <div>
+                            <button class="btn btn-primary-custom btn-sm me-2"><i class="fas fa-plus me-1"></i> Add User</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="fetchUsers()"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>User Info</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Joined Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VENDORS SECTION -->
+            <div id="vendors" class="content-section" style="display: none;">
+                <div class="bg-surface p-4 rounded-4 shadow-sm border-custom mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0 fs-5"><i class="fas fa-store text-secondary-custom me-2"></i> All Vendors</h5>
+                        <button class="btn btn-primary-custom btn-sm" onclick="fetchVendors()"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Store Info</th>
+                                    <th>Owner Name</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vendors-table-body">
+                                <tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCTS SECTION -->
+            <div id="products" class="content-section" style="display: none;">
+                <div class="bg-surface p-4 rounded-4 shadow-sm border-custom mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0 fs-5"><i class="fas fa-box text-secondary-custom me-2"></i> All Products</h5>
+                        <div>
+                            <button class="btn btn-primary-custom btn-sm me-2" data-bs-toggle="modal" data-bs-target="#addProductModal"><i class="fas fa-plus me-1"></i> Add Product</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="fetchProducts()"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product Info</th>
+                                    <th>Price & Stock</th>
+                                    <th>Status</th>
+                                    <th>Added Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body">
+                                <tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORIES SECTION -->
+            <div id="categories" class="content-section" style="display: none;">
+                <div class="bg-surface p-4 rounded-4 shadow-sm border-custom mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0 fs-5"><i class="fas fa-tags text-secondary-custom me-2"></i> All Categories</h5>
+                        <button class="btn btn-primary-custom btn-sm" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><i class="fas fa-plus me-1"></i> Add Category</button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Image & Name</th>
+                                    <th>Slug</th>
+                                    <th>Status</th>
+                                    <th>Created Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categories-table-body">
+                                <tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ORDERS SECTION -->
+            <div id="orders" class="content-section" style="display: none;">
+                <div class="bg-surface p-5 rounded-4 shadow-sm border-custom text-center mt-4">
+                    <i class="fas fa-shopping-cart fs-1 text-secondary-custom mb-3"></i>
+                    <h4 class="mb-3">Global Orders</h4>
+                    <p class="text-muted">Track order fulfillment across the entire marketplace platform.</p>
+                </div>
+            </div>
+
+            <!-- PAYOUTS SECTION -->
+            <div id="payouts" class="content-section" style="display: none;">
+                <div class="bg-surface p-5 rounded-4 shadow-sm border-custom text-center mt-4">
+                    <i class="fas fa-money-bill-wave fs-1 text-secondary-custom mb-3"></i>
+                    <h4 class="mb-3">Vendor Payouts</h4>
+                    <p class="text-muted">Process commissions and disburse earnings to vendor accounts.</p>
+                </div>
+            </div>
+
+            <!-- SETTINGS SECTION -->
+            <div id="settings" class="content-section" style="display: none;">
+                <div class="bg-surface p-5 rounded-4 shadow-sm border-custom text-center mt-4">
+                    <i class="fas fa-cog fs-1 text-secondary-custom mb-3"></i>
+                    <h4 class="mb-3">Platform Settings</h4>
+                    <p class="text-muted">Configure global platform variables, tax rates, shipping methods, and SEO.</p>
+                </div>
+            </div>
+
+            <!-- Product Details Modal -->
+            <div class="modal fade" id="productDetailsModal" tabindex="-1" aria-labelledby="productDetailsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg rounded-4">
+                        <div class="modal-header border-bottom-0 pb-0">
+                            <h5 class="modal-title fw-bold" id="productDetailsModalLabel"><i class="fas fa-box-open text-primary me-2"></i>Product Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body pt-4" id="productDetailsContent">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top-0 pt-0">
+                            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vendor Details Modal -->
+            <div class="modal fade" id="vendorDetailsModal" tabindex="-1" aria-labelledby="vendorDetailsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg rounded-4">
+                        <div class="modal-header border-bottom-0 pb-0">
+                            <h5 class="modal-title fw-bold" id="vendorDetailsModalLabel"><i class="fas fa-store text-primary me-2"></i>Vendor Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body pt-4" id="vendorDetailsContent">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top-0 pt-0">
+                            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Product Modal -->
+            <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg rounded-4">
+                        <div class="modal-header border-bottom-0 pb-0">
+                            <h5 class="modal-title fw-bold" id="addProductModalLabel"><i class="fas fa-plus-circle text-primary me-2"></i>Add New Product</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body pt-4">
+                            <form id="addProductForm">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label for="prodVendorId" class="form-label fw-bold">Vendor <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="prodVendorId" required>
+                                            <option value="">Loading vendors...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="prodName" class="form-label fw-bold">Product Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="prodName" required placeholder="e.g. Classic T-Shirt">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="prodCategoryId" class="form-label fw-bold">Category <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="prodCategoryId" required>
+                                            <option value="">Loading categories...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="prodPrice" class="form-label fw-bold">Price (৳) <span class="text-danger">*</span></label>
+                                        <input type="number" step="0.01" class="form-control" id="prodPrice" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="prodDiscountPrice" class="form-label fw-bold">Discount Price (৳)</label>
+                                        <input type="number" step="0.01" class="form-control" id="prodDiscountPrice">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="prodStock" class="form-label fw-bold">Stock Quantity <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="prodStock" required value="0">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="prodShortDesc" class="form-label fw-bold">Short Description <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="prodShortDesc" required placeholder="Brief summary">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="prodDesc" class="form-label fw-bold">Full Description <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" id="prodDesc" rows="3" required placeholder="Detailed product description..."></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="prodImageUrl" class="form-label fw-bold">Image URL</label>
+                                        <div class="input-group">
+                                            <input type="url" class="form-control" id="prodImageUrl" placeholder="https://example.com/image.jpg">
+                                            <button class="btn btn-outline-primary" type="button" id="aiGenerateBtn">
+                                                <i class="fas fa-magic me-1"></i> <span id="aiGenerateText">AI Generate</span>
+                                                <span class="spinner-border spinner-border-sm d-none" id="aiGenerateSpinner" role="status" aria-hidden="true"></span>
+                                            </button>
+                                        </div>
+                                        <small class="text-muted mt-1 d-block">Enter a product name and short description, then click AI Generate to create an image automatically.</small>
+                                    </div>
+                                </div>
+                                <div class="mt-4 text-end">
+                                    <button type="button" class="btn btn-secondary px-4 me-2" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary-custom px-4" id="saveProductBtn">
+                                        <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                                        Save Product
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Category Modal -->
+            <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg rounded-4">
+                        <div class="modal-header border-bottom-0 pb-0">
+                            <h5 class="modal-title fw-bold" id="addCategoryModalLabel"><i class="fas fa-plus-circle text-primary me-2"></i>Create New Category</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body pt-4">
+                            <form id="addCategoryForm">
+                                <div class="mb-3">
+                                    <label for="catName" class="form-label fw-bold">Category Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="catName" required placeholder="e.g. Electronics">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="catSlug" class="form-label fw-bold">Slug <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="catSlug" required placeholder="e.g. electronics">
+                                    <small class="text-muted">Auto-generated from name, but you can edit it manually.</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="catDescription" class="form-label fw-bold">Description</label>
+                                    <textarea class="form-control" id="catDescription" rows="2" placeholder="Brief description of the category"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="catImage" class="form-label fw-bold">Image URL</label>
+                                    <input type="url" class="form-control" id="catImage" placeholder="https://example.com/image.jpg">
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="catIsActive" checked>
+                                    <label class="form-check-label fw-bold" for="catIsActive">Active</label>
+                                </div>
+                                <div class="d-grid mt-4">
+                                    <button type="submit" class="btn btn-primary" id="btnSubmitCategory">Create Category</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Category Modal -->
+            <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg rounded-4">
+                        <div class="modal-header border-bottom-0 pb-0">
+                            <h5 class="modal-title fw-bold" id="editCategoryModalLabel"><i class="fas fa-edit text-primary me-2"></i>Edit Category</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body pt-4">
+                            <form id="editCategoryForm">
+                                <input type="hidden" id="editCatId">
+                                <div class="mb-3">
+                                    <label for="editCatName" class="form-label fw-bold">Category Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="editCatName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editCatSlug" class="form-label fw-bold">Slug <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="editCatSlug" required>
+                                    <small class="text-muted">You can edit it manually.</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editCatDescription" class="form-label fw-bold">Description</label>
+                                    <textarea class="form-control" id="editCatDescription" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editCatImage" class="form-label fw-bold">Image URL</label>
+                                    <input type="url" class="form-control" id="editCatImage">
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="editCatIsActive">
+                                    <label class="form-check-label fw-bold" for="editCatIsActive">Active</label>
+                                </div>
+                                <div class="d-grid mt-4">
+                                    <button type="submit" class="btn btn-primary" id="btnSubmitEditCategory">Update Category</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg rounded-4">
+                        <div class="modal-header border-bottom-0 pb-0">
+                            <h5 class="modal-title fw-bold text-danger" id="deleteCategoryModalLabel"><i class="fas fa-exclamation-triangle me-2"></i>Delete Category</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body pt-4">
+                            <p class="fs-5 mb-1">Are you sure you want to delete this category?</p>
+                            <p class="text-danger fw-bold" id="deleteCategoryNameDisplay"></p>
+                            <p class="text-muted small mb-0"><i class="fas fa-info-circle me-1"></i>This action cannot be undone.</p>
+                            <input type="hidden" id="deleteCatId">
+                        </div>
+                        <div class="modal-footer border-top-0">
+                            <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger px-4" id="btnConfirmDeleteCategory" onclick="confirmDeleteCategory()">Yes, Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global authenticated fetch wrapper
+        window.fetchWithAuth = async function(url, options = {}) {
+            let token = localStorage.getItem('accessToken');
+            if (!options.headers) options.headers = {};
+            if (token && !options.headers['Authorization']) {
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+            
+            let response = await fetch(url, options);
+            
+            if (response.status === 401) {
+                const refreshToken = localStorage.getItem('refreshToken');
+                if (refreshToken) {
+                    try {
+                        const refreshResponse = await fetch('http://127.0.0.1:8000/api/v1/auth/refresh', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                            body: JSON.stringify({ refresh_token: refreshToken })
+                        });
+                        
+                        if (refreshResponse.ok) {
+                            const data = await refreshResponse.json();
+                            localStorage.setItem('accessToken', data.access_token);
+                            if (data.refresh_token) localStorage.setItem('refreshToken', data.refresh_token);
+                            
+                            options.headers['Authorization'] = `Bearer ${data.access_token}`;
+                            response = await fetch(url, options);
+                        } else {
+                            throw new Error('Refresh failed');
+                        }
+                    } catch (err) {
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('refreshToken');
+                        window.location.href = 'login.html';
+                    }
+                } else {
+                    localStorage.removeItem('accessToken');
+                    window.location.href = 'login.html';
+                }
+            }
+            return response;
+        };
+
+        // UI Interactions
+        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('show');
+        });
+        
+        document.getElementById('adminLogoutBtn')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            window.location.href = 'login.html';
+        });
+
+        // Sidebar Navigation Routing Logic
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const contentSections = document.querySelectorAll('.content-section');
+        const pageTitle = document.getElementById('pageTitle');
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Hide all sections
+                contentSections.forEach(section => {
+                    section.style.display = 'none';
+                    // Optional fade out/in effect
+                    section.style.opacity = '0';
+                });
+                
+                // Update Page Title
+                if(pageTitle) {
+                    pageTitle.textContent = this.getAttribute('data-title');
+                }
+                
+                // Show targeted section
+                const targetId = this.getAttribute('data-target');
+                const targetSection = document.getElementById(targetId);
+                
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                    // Optional fade in effect
+                    setTimeout(() => {
+                        targetSection.style.opacity = '1';
+                        targetSection.style.transition = 'opacity 0.3s ease';
+                    }, 50);
+                    
+                    // Fetch data if needed
+                    if (targetId === 'vendors') {
+                        fetchVendors();
+                    } else if (targetId === 'users') {
+                        fetchUsers();
+                    } else if (targetId === 'categories') {
+                        fetchCategories();
+                    } else if (targetId === 'products') {
+                        fetchProducts();
+                    }
+                }
+
+                // Close sidebar on mobile after clicking
+                if (window.innerWidth < 992) {
+                    document.getElementById('sidebar').classList.remove('show');
+                }
+            });
+        });
+
+        // Logout Logic
+        const logoutBtn = document.getElementById('adminLogoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userRole');
+                window.location.href = 'login.html';
+            });
+        }
+
+        // Fetch Analytics Data
+        async function fetchAdminAnalytics() {
+            try {
+                const response = await fetchWithAuth('http://127.0.0.1:8000/api/v1/admin/analytics', {
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    cache: 'no-store'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const stats = data.data;
+                    
+                    // Format currency nicely
+                    const formatCurrency = (val) => {
+                        if (val >= 1000000) return '৳ ' + (val / 1000000).toFixed(1) + 'M';
+                        if (val >= 1000) return '৳ ' + (val / 1000).toFixed(1) + 'k';
+                        return '৳ ' + val.toLocaleString();
+                    };
+
+                    const formatNumber = (val) => {
+                        if (val >= 1000) return (val / 1000).toFixed(1) + 'k';
+                        return val.toLocaleString();
+                    };
+                    
+                    document.getElementById('stat-revenue').textContent = formatCurrency(stats.total_revenue || 0);
+                    document.getElementById('stat-vendors').textContent = formatNumber(stats.total_vendors || 0);
+                    document.getElementById('stat-users').textContent = formatNumber(stats.total_users || 0);
+                    document.getElementById('stat-commission').textContent = formatCurrency(stats.platform_commission || 0);
+                    
+                    const pendingBadge = document.getElementById('pending-vendors-badge');
+                    if (stats.pending_vendor_approvals > 0) {
+                        pendingBadge.textContent = stats.pending_vendor_approvals;
+                        pendingBadge.style.display = 'inline-block';
+                    } else {
+                        pendingBadge.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching analytics:', error);
+            }
+        }
+
+        // Fetch All Vendors and populate both tables
+        async function fetchVendors() {
+            const tbody = document.getElementById('vendors-table-body');
+            const pendingTbody = document.getElementById('pending-vendors-table-body');
+            
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>';
+            if(pendingTbody) pendingTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>';
+
+            try {
+                const response = await fetchWithAuth('http://127.0.0.1:8000/api/v1/vendors/', {
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    cache: 'no-store'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const vendors = data.data || [];
+                    
+                    if (vendors.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No vendors found.</td></tr>';
+                        if(pendingTbody) pendingTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No pending vendors found.</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = '';
+                    if(pendingTbody) pendingTbody.innerHTML = '';
+                    let pendingCount = 0;
+
+                    vendors.forEach(vendor => {
+                        const joinedDate = new Date(vendor.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                        const isPending = vendor.status === 'pending';
+                        
+                        let statusBadge = '';
+                        if (vendor.status === 'approved') {
+                            statusBadge = '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1"><i class="fas fa-check-circle me-1"></i>Approved</span>';
+                        } else if (vendor.status === 'rejected') {
+                            statusBadge = '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1"><i class="fas fa-times-circle me-1"></i>Rejected</span>';
+                        } else {
+                            statusBadge = '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1"><i class="fas fa-clock me-1"></i>Pending</span>';
+                        }
+                            
+                        const initial = vendor.store_name ? vendor.store_name.charAt(0).toUpperCase() : 'V';
+                        
+                        const actionButtons = `
+                            <button class="btn btn-sm btn-outline-primary me-1" title="View Details" onclick="viewVendorDetails('${vendor.id}')"><i class="fas fa-eye"></i></button>
+                            ${isPending ? `<button class="btn btn-sm btn-outline-success me-1" title="Approve" onclick="handleVendorApproval('${vendor.id}', true)"><i class="fas fa-check"></i></button>` : ''}
+                            ${vendor.status !== 'rejected' ? `<button class="btn btn-sm btn-outline-danger" title="Reject/Ban" onclick="handleVendorApproval('${vendor.id}', false)"><i class="fas fa-ban"></i></button>` : ''}
+                        `;
+
+                        // Row for All Vendors table
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-weight: 700; font-size: 1.2rem;">${initial}</div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">${vendor.store_name}</h6>
+                                        <small class="text-muted"><i class="fas fa-envelope me-1"></i>${vendor.email || 'N/A'}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle">${vendor.owner_name || vendor.email || 'Unknown'}</td>
+                            <td class="align-middle">${statusBadge}</td>
+                            <td class="align-middle">${joinedDate}</td>
+                            <td class="align-middle">${actionButtons}</td>
+                        `;
+                        tbody.appendChild(row);
+
+                        // Row for Pending Vendors table
+                        if (isPending && pendingTbody) {
+                            pendingCount++;
+                            const pendingActionButtons = `
+                                <button class="btn btn-sm btn-success me-1" title="Approve" onclick="handleVendorApproval('${vendor.id}', true)"><i class="fas fa-check"></i></button>
+                                <button class="btn btn-sm btn-danger" title="Reject" onclick="handleVendorApproval('${vendor.id}', false)"><i class="fas fa-times"></i></button>
+                            `;
+                            const pendingRow = document.createElement('tr');
+                            pendingRow.innerHTML = `
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; font-weight: 700; font-size: 1rem;">${initial}</div>
+                                        <strong>${vendor.store_name}</strong>
+                                    </div>
+                                </td>
+                                <td class="align-middle">${vendor.email || 'N/A'}</td>
+                                <td class="align-middle">${vendor.phone || 'N/A'}</td>
+                                <td class="align-middle">${joinedDate}</td>
+                                <td class="align-middle">${pendingActionButtons}</td>
+                            `;
+                            pendingTbody.appendChild(pendingRow);
+                        }
+                    });
+
+                    if (pendingCount === 0 && pendingTbody) {
+                        pendingTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No pending vendors found.</td></tr>';
+                    }
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Failed to load vendors.</td></tr>';
+                    if(pendingTbody) pendingTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Failed to load vendors.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error fetching vendors:', error);
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Network error occurred while loading vendors.</td></tr>';
+                if(pendingTbody) pendingTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Network error occurred while loading vendors.</td></tr>';
+            }
+        }
+
+        // Handle Vendor Approval/Rejection
+        async function handleVendorApproval(vendorId, isApproved) {
+            if (!confirm(`Are you sure you want to ${isApproved ? 'approve' : 'reject'} this vendor?`)) return;
+
+            // Optional: Find the button and set it to loading state
+            const buttons = document.querySelectorAll(`button[onclick="handleVendorApproval('${vendorId}', ${isApproved})"]`);
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            });
+
+            try {
+                const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v1/vendors/${vendorId}/approve`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ is_approved: isApproved })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && (data.success || data.message)) {
+                    // Refresh data after successful update
+                    await fetchVendors();
+                    await fetchAdminAnalytics();
+                    
+                    // Show a toast or small alert
+                    const toastDiv = document.createElement('div');
+                    toastDiv.className = `alert alert-success position-fixed bottom-0 end-0 m-3 shadow-lg`;
+                    toastDiv.style.zIndex = '9999';
+                    toastDiv.innerHTML = `<i class="fas fa-check-circle me-2"></i> Vendor successfully ${isApproved ? 'approved' : 'rejected'}!`;
+                    document.body.appendChild(toastDiv);
+                    setTimeout(() => toastDiv.remove(), 3000);
+                } else {
+                    alert(data.message || 'Failed to update vendor status.');
+                    buttons.forEach(btn => {
+                        btn.disabled = false;
+                        btn.innerHTML = isApproved ? '<i class="fas fa-check"></i>' : '<i class="fas fa-times"></i>';
+                    });
+                }
+            } catch (error) {
+                console.error('Error updating vendor:', error);
+                alert('Network error occurred while updating vendor status.');
+                buttons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.innerHTML = isApproved ? '<i class="fas fa-check"></i>' : '<i class="fas fa-times"></i>';
+                });
+            }
+        }
+
+        // View Vendor Details Logic
+        async function viewVendorDetails(vendorId) {
+            const modal = new bootstrap.Modal(document.getElementById('vendorDetailsModal'));
+            modal.show();
+            
+            const contentDiv = document.getElementById('vendorDetailsContent');
+            contentDiv.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+            
+            const token = localStorage.getItem('accessToken');
+            if (!token) return;
+
+            try {
+                const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v1/vendors/${vendorId}`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    cache: 'no-store'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const vendor = data.data;
+                    const joinedDate = new Date(vendor.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    
+                    let statusBadge = '';
+                    if (vendor.status === 'approved') statusBadge = '<span class="badge bg-success bg-opacity-10 text-success px-3 py-2">Approved</span>';
+                    else if (vendor.status === 'rejected') statusBadge = '<span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2">Rejected</span>';
+                    else statusBadge = '<span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2">Pending</span>';
+
+                    contentDiv.innerHTML = `
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="bg-light p-3 rounded-3 h-100">
+                                    <h6 class="fw-bold mb-3 border-bottom pb-2">Store Information</h6>
+                                    <p class="mb-2"><strong>Store Name:</strong> ${vendor.store_name}</p>
+                                    <p class="mb-2"><strong>Owner Name:</strong> ${vendor.owner_name}</p>
+                                    <p class="mb-2"><strong>Status:</strong> ${statusBadge}</p>
+                                    <p class="mb-0"><strong>Joined:</strong> ${joinedDate}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="bg-light p-3 rounded-3 h-100">
+                                    <h6 class="fw-bold mb-3 border-bottom pb-2">Contact Details</h6>
+                                    <p class="mb-2"><strong>Email:</strong> ${vendor.email}</p>
+                                    <p class="mb-2"><strong>Phone:</strong> ${vendor.phone}</p>
+                                    <p class="mb-0"><strong>Address:</strong> ${vendor.address}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    contentDiv.innerHTML = `<div class="alert alert-danger">${data.message || 'Failed to load vendor details'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                contentDiv.innerHTML = `<div class="alert alert-danger">Network error occurred while fetching details.</div>`;
+            }
+        }
+
+        // Fetch All Users
+        async function fetchUsers() {
+            const token = localStorage.getItem('accessToken');
+            if (!token) return;
+
+            const tbody = document.getElementById('users-table-body');
+            if(!tbody) return;
+            
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>';
+
+            try {
+                const response = await fetchWithAuth('http://127.0.0.1:8000/api/v1/admin/users', {
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    cache: 'no-store'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const users = data.data || [];
+                    
+                    if (users.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No users found.</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = '';
+
+                    users.forEach(user => {
+                        const joinedDate = new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                        
+                        const statusBadge = user.is_active ? 
+                            '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1"><i class="fas fa-check-circle me-1"></i>Active</span>' : 
+                            '<span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-2 py-1"><i class="fas fa-minus-circle me-1"></i>Inactive</span>';
+                        
+                        const roleColor = user.role === 'admin' ? 'danger' : (user.role === 'vendor' ? 'warning' : 'primary');
+                        const roleBadge = `<span class="badge bg-${roleColor} bg-opacity-10 text-${roleColor} px-2 py-1 text-capitalize">${user.role}</span>`;
+
+                        const initial = (user.full_name || user.email).charAt(0).toUpperCase();
+                        
+                        const actionButtons = `
+                            <button class="btn btn-sm btn-outline-primary me-1" title="View Details"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" title="Ban User"><i class="fas fa-ban"></i></button>
+                        `;
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-weight: 700; font-size: 1.2rem;">${initial}</div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">${user.full_name || 'N/A'}</h6>
+                                        <small class="text-muted"><i class="fas fa-envelope me-1"></i>${user.email}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle">${roleBadge}</td>
+                            <td class="align-middle">${statusBadge}</td>
+                            <td class="align-middle">${joinedDate}</td>
+                            <td class="align-middle">${actionButtons}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Failed to load users.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Network error occurred while loading users.</td></tr>';
+            }
+        }
+
+        // Fetch Categories
+        async function fetchCategories() {
+            const tbody = document.getElementById('categories-table-body');
+            if(!tbody) return;
+            
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>';
+
+            try {
+                const response = await fetchWithAuth('http://127.0.0.1:8000/api/v1/categories/', {
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    cache: 'no-store'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const categories = data.data || [];
+                    window.allCategories = categories; // Store globally for edit modal
+                    
+                    if (categories.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No categories found.</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = '';
+
+                    categories.forEach(category => {
+                        const createdDate = new Date(category.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                        const statusBadge = category.is_active ? 
+                            '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1"><i class="fas fa-check-circle me-1"></i>Active</span>' : 
+                            '<span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-2 py-1"><i class="fas fa-minus-circle me-1"></i>Inactive</span>';
+                        
+                        // Use random avatar if no image exists
+                        const imgHtml = category.image ? 
+                            `<img src="${category.image}" class="rounded me-3" width="40" height="40" style="object-fit:cover;">` : 
+                            `<div class="rounded bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-weight: 700;">${category.name.charAt(0).toUpperCase()}</div>`;
+                        
+                        const actionButtons = `
+                            <button class="btn btn-sm btn-outline-primary me-1" title="Edit Category" onclick="openEditCategoryModal('${category.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" title="Delete Category" onclick="deleteCategory('${category.id}', '${category.name}')"><i class="fas fa-trash"></i></button>
+                        `;
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    ${imgHtml}
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">${category.name}</h6>
+                                        <small class="text-muted d-block text-truncate" style="max-width: 150px;">${category.description || ''}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle"><code>${category.slug}</code></td>
+                            <td class="align-middle">${statusBadge}</td>
+                            <td class="align-middle">${createdDate}</td>
+                            <td class="align-middle">${actionButtons}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">${data.message || 'Failed to load categories.'}</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Network error occurred while loading categories.</td></tr>';
+            }
+        }
+
+        // Fetch Products
+        async function fetchProducts() {
+            const tbody = document.getElementById('products-table-body');
+            if(!tbody) return;
+            
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>';
+
+            try {
+                const response = await fetchWithAuth('http://127.0.0.1:8000/api/v1/products/', {
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    cache: 'no-store'
+                });
+
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                }
+                
+                if (response.ok) {
+                    // Fast api products endpoint returns a list directly or a wrapped data object
+                    const products = Array.isArray(data) ? data : (data.data || []);
+                    
+                    if (products.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No products found.</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = '';
+
+                    products.forEach(product => {
+                        const createdDate = new Date(product.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                        
+                        let statusBadge = '';
+                        if (product.is_approved === false) {
+                            statusBadge = '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1"><i class="fas fa-clock me-1"></i>Pending</span>';
+                        } else if (!product.is_active) {
+                            statusBadge = '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1"><i class="fas fa-ban me-1"></i>Inactive</span>';
+                        } else {
+                            statusBadge = '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1"><i class="fas fa-check-circle me-1"></i>Active</span>';
+                        }
+                        
+                        // Use first image or placeholder
+                        const imgUrl = (product.images && product.images.length > 0) ? product.images[0] : null;
+                        const imgHtml = imgUrl ? 
+                            `<img src="${imgUrl}" class="rounded me-3" width="40" height="40" style="object-fit:cover;">` : 
+                            `<div class="rounded bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-weight: 700;">${product.name.charAt(0).toUpperCase()}</div>`;
+                        
+                        const actionButtons = `
+                            <button class="btn btn-sm btn-outline-primary me-1" title="View Details" onclick="viewProductDetails('${product.id}')"><i class="fas fa-eye"></i></button>
+                            ${product.is_approved === false ? `<button class="btn btn-sm btn-outline-success me-1" title="Approve" onclick="approveProduct('${product.id}')"><i class="fas fa-check"></i></button>` : ''}
+                            <button class="btn btn-sm btn-outline-danger" title="Delete Product" onclick="deleteProduct('${product.id}')"><i class="fas fa-trash"></i></button>
+                        `;
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    ${imgHtml}
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-truncate" style="max-width: 200px;">${product.name}</h6>
+                                        <small class="text-muted d-block text-truncate" style="max-width: 200px;">${product.category ? product.category.name : (product.category_id || 'No category')}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle">
+                                <strong>৳ ${product.price}</strong>
+                                <br><small class="text-muted">Stock: ${product.stock_quantity !== undefined ? product.stock_quantity : 'N/A'}</small>
+                            </td>
+                            <td class="align-middle">${statusBadge}</td>
+                            <td class="align-middle">${createdDate}</td>
+                            <td class="align-middle">${actionButtons}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">${(data && data.message) ? data.message : 'Failed to load products.'}</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Network error occurred while loading products.</td></tr>';
+            }
+        }
+
+        // View Product Details
+        async function viewProductDetails(productId) {
+            const modal = new bootstrap.Modal(document.getElementById('productDetailsModal'));
+            modal.show();
+            
+            const contentDiv = document.getElementById('productDetailsContent');
+            contentDiv.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Loading details...</p></div>';
+            
+            try {
+                const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v1/products/${productId}`, {
+                    headers: { 'Accept': 'application/json' },
+                    cache: 'no-store'
+                });
+                
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                }
+                
+                if (response.ok) {
+                    const product = data.data || data;
+                    
+                    let imagesHtml = '';
+                    if (product.images && product.images.length > 0) {
+                        imagesHtml = `<div class="d-flex gap-2 overflow-auto mb-4 pb-2">`;
+                        product.images.forEach(img => {
+                            imagesHtml += `<img src="${img}" class="rounded border shadow-sm" style="height: 120px; object-fit: cover;">`;
+                        });
+                        imagesHtml += `</div>`;
+                    } else {
+                        imagesHtml = `<div class="bg-light rounded d-flex align-items-center justify-content-center mb-4" style="height: 120px;"><span class="text-muted"><i class="fas fa-image me-2"></i>No images available</span></div>`;
+                    }
+
+                    contentDiv.innerHTML = `
+                        ${imagesHtml}
+                        <h4 class="fw-bold mb-1">${product.name}</h4>
+                        <div class="mb-3 d-flex gap-2 flex-wrap">
+                            <span class="badge bg-secondary">SKU: ${product.sku || 'N/A'}</span>
+                            <span class="badge bg-info text-dark">Category ID: ${product.category_id || 'N/A'}</span>
+                            <span class="badge bg-light text-dark border"><i class="fas fa-star text-warning"></i> ${product.rating || 0} (${product.review_count || 0} reviews)</span>
+                        </div>
+                        
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="bg-light rounded p-3 h-100 border">
+                                    <h6 class="fw-bold text-muted mb-3"><i class="fas fa-tag me-2"></i>Pricing & Inventory</h6>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Regular Price:</span>
+                                        <span class="fw-bold">৳ ${product.price}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Discount Price:</span>
+                                        <span class="fw-bold text-success">${product.discount_price ? '৳ ' + product.discount_price : 'None'}</span>
+                                    </div>
+                                    <hr class="my-2 text-muted">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Stock Quantity:</span>
+                                        <span class="fw-bold ${product.stock_quantity > 0 ? 'text-dark' : 'text-danger'}">${product.stock_quantity !== undefined ? product.stock_quantity : 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="bg-light rounded p-3 h-100 border">
+                                    <h6 class="fw-bold text-muted mb-3"><i class="fas fa-info-circle me-2"></i>Status & Info</h6>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Status:</span>
+                                        <span class="fw-bold">${product.status || (product.is_active ? 'Active' : 'Inactive')}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Approved:</span>
+                                        <span class="fw-bold">${product.is_approved ? '<span class="text-success"><i class="fas fa-check"></i> Yes</span>' : '<span class="text-warning"><i class="fas fa-clock"></i> Pending</span>'}</span>
+                                    </div>
+                                    <hr class="my-2 text-muted">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Vendor ID:</span>
+                                        <span class="text-truncate ms-2" style="max-width: 150px;" title="${product.vendor_id}">${product.vendor_id || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border rounded p-3">
+                            <h6 class="fw-bold text-muted mb-2">Short Description</h6>
+                            <p class="mb-3">${product.short_description || 'No short description provided.'}</p>
+                            
+                            <h6 class="fw-bold text-muted mb-2">Full Description</h6>
+                            <p class="mb-0" style="white-space: pre-wrap;">${product.description || 'No detailed description provided.'}</p>
+                        </div>
+                    `;
+                } else {
+                    contentDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i> ${(data && data.message) ? data.message : 'Failed to fetch product details.'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+                contentDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i> Network error occurred.</div>`;
+            }
+        }
+
+        // Auto-generate slug from Category Name
+        document.getElementById('catName')?.addEventListener('input', function(e) {
+            const name = e.target.value;
+            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            document.getElementById('catSlug').value = slug;
+        });
+
+        // Handle Add Category Form Submission
+        document.getElementById('addCategoryForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btnSubmit = document.getElementById('btnSubmitCategory');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating...';
+            btnSubmit.disabled = true;
+
+            const name = document.getElementById('catName').value;
+            const slug = document.getElementById('catSlug').value;
+            const description = document.getElementById('catDescription').value || null;
+            const image = document.getElementById('catImage').value || null;
+            const is_active = document.getElementById('catIsActive').checked;
+
+            const payload = {
+                name, slug, description, image, is_active, parent_id: null
+            };
+
+            try {
+                const token = localStorage.getItem('accessToken');
+                const response = await fetchWithAuth('http://127.0.0.1:8000/api/v1/categories/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && (data.success || data.message === "Category created")) {
+                    // Show success toast
+                    const toastDiv = document.createElement('div');
+                    toastDiv.className = `alert alert-success position-fixed bottom-0 end-0 m-3 shadow-lg`;
+                    toastDiv.style.zIndex = '9999';
+                    toastDiv.innerHTML = `<i class="fas fa-check-circle me-2"></i> Category "${name}" created successfully!`;
+                    document.body.appendChild(toastDiv);
+                    setTimeout(() => toastDiv.remove(), 3000);
+
+                    // Reset form and close modal
+                    document.getElementById('addCategoryForm').reset();
+                    const modalEl = document.getElementById('addCategoryModal');
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    if(modal) modal.hide();
+
+                    // Refresh categories list
+                    await fetchCategories();
+                } else {
+                    alert(data.message || 'Failed to create category.');
+                }
+            } catch (error) {
+                console.error('Error creating category:', error);
+                alert('Network error occurred while creating category.');
+            } finally {
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+            }
+        });
+
+        // Open Edit Category Modal
+        function openEditCategoryModal(categoryId) {
+            const category = window.allCategories?.find(c => c.id === categoryId);
+            if (!category) return;
+
+            document.getElementById('editCatId').value = category.id;
+            document.getElementById('editCatName').value = category.name;
+            document.getElementById('editCatSlug').value = category.slug;
+            document.getElementById('editCatDescription').value = category.description || '';
+            document.getElementById('editCatImage').value = category.image || '';
+            document.getElementById('editCatIsActive').checked = category.is_active;
+
+            const modalEl = document.getElementById('editCategoryModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
+
+        // Auto-generate slug for Edit form too
+        document.getElementById('editCatName')?.addEventListener('input', function(e) {
+            const name = e.target.value;
+            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            document.getElementById('editCatSlug').value = slug;
+        });
+
+        // Handle Edit Category Form Submission
+        document.getElementById('editCategoryForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btnSubmit = document.getElementById('btnSubmitEditCategory');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...';
+            btnSubmit.disabled = true;
+
+            const id = document.getElementById('editCatId').value;
+            const name = document.getElementById('editCatName').value;
+            const slug = document.getElementById('editCatSlug').value;
+            const description = document.getElementById('editCatDescription').value || null;
+            const image = document.getElementById('editCatImage').value || null;
+            const is_active = document.getElementById('editCatIsActive').checked;
+
+            const payload = {
+                name, slug, description, image, is_active
+            };
+
+            try {
+                const token = localStorage.getItem('accessToken');
+                const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v1/categories/${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && (data.success || data.message)) {
+                    // Show success toast
+                    const toastDiv = document.createElement('div');
+                    toastDiv.className = `alert alert-success position-fixed bottom-0 end-0 m-3 shadow-lg`;
+                    toastDiv.style.zIndex = '9999';
+                    toastDiv.innerHTML = `<i class="fas fa-check-circle me-2"></i> Category "${name}" updated successfully!`;
+                    document.body.appendChild(toastDiv);
+                    setTimeout(() => toastDiv.remove(), 3000);
+
+                    // Reset form and close modal
+                    document.getElementById('editCategoryForm').reset();
+                    const modalEl = document.getElementById('editCategoryModal');
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    if(modal) modal.hide();
+
+                    // Refresh categories list
+                    await fetchCategories();
+                } else {
+                    alert(data.message || 'Failed to update category.');
+                }
+            } catch (error) {
+                console.error('Error updating category:', error);
+                alert('Network error occurred while updating category.');
+            } finally {
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+            }
+        });
+
+        // Show Delete Category Modal
+        function deleteCategory(id, name) {
+            document.getElementById('deleteCatId').value = id;
+            document.getElementById('deleteCategoryNameDisplay').innerText = `"${name}"`;
+            const modalEl = document.getElementById('deleteCategoryModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
+
+        // Confirm and Execute Delete
+        async function confirmDeleteCategory() {
+            const id = document.getElementById('deleteCatId').value;
+            const nameDisplay = document.getElementById('deleteCategoryNameDisplay').innerText;
+            
+            const btnSubmit = document.getElementById('btnConfirmDeleteCategory');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...';
+            btnSubmit.disabled = true;
+
+            try {
+                const token = localStorage.getItem('accessToken');
+                const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v1/categories/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                }
+
+                if (response.ok) {
+                    // Show success toast
+                    const toastDiv = document.createElement('div');
+                    toastDiv.className = `alert alert-success position-fixed bottom-0 end-0 m-3 shadow-lg`;
+                    toastDiv.style.zIndex = '9999';
+                    toastDiv.innerHTML = `<i class="fas fa-trash-alt me-2"></i> Category ${nameDisplay} deleted successfully!`;
+                    document.body.appendChild(toastDiv);
+                    setTimeout(() => toastDiv.remove(), 3000);
+
+                    // Close modal
+                    const modalEl = document.getElementById('deleteCategoryModal');
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    if (modal) modal.hide();
+
+                    // Refresh categories list
+                    await fetchCategories();
+                } else {
+                    const errorMessage = data && data.message ? data.message : (data && data.detail ? (typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail)) : 'Failed to delete category.');
+                    alert(`Error: ${errorMessage}`);
+                }
+            } catch (error) {
+                console.error('Error deleting category:', error);
+                alert(`Network error occurred while deleting category: ${error.message}`);
+            } finally {
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAdminAnalytics();
+            fetchVendors();
+            fetchUsers();
+            fetchCategories();
+        });
+        // Add Product Form Submission
+        document.getElementById('addProductForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const vendorId = document.getElementById('prodVendorId').value.trim();
+            const name = document.getElementById('prodName').value.trim();
+            // Automatically generate a slug
+            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            const categoryId = document.getElementById('prodCategoryId').value.trim();
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const discountPrice = document.getElementById('prodDiscountPrice').value ? parseFloat(document.getElementById('prodDiscountPrice').value) : null;
+            const stock = parseInt(document.getElementById('prodStock').value);
+            const shortDesc = document.getElementById('prodShortDesc').value.trim();
+            const desc = document.getElementById('prodDesc').value.trim();
+            const imageUrl = document.getElementById('prodImageUrl').value.trim();
+
+            const payload = {
+                name: name,
+                slug: slug,
+                description: desc,
+                short_description: shortDesc,
+                price: price,
+                discount_price: discountPrice,
+                stock_quantity: stock,
+                category_id: categoryId,
+                images: imageUrl ? [imageUrl] : []
+            };
+
+            const btn = document.getElementById('saveProductBtn');
+            const spinner = btn.querySelector('.spinner-border');
+            
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+
+            try {
+                const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v1/products/?vendor_id=${vendorId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                }
+
+                if (response.ok) {
+                    showToast('Product added successfully!', 'success');
+                    
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addProductModal'));
+                    modal.hide();
+                    this.reset();
+                    
+                    // Refresh products table if we are on the products tab
+                    if(document.getElementById('products').style.display === 'block') {
+                        fetchProducts();
+                    }
+                } else {
+                    let errorMessage = 'Failed to add product.';
+                    if (data && data.detail) {
+                        if (typeof data.detail === 'string') errorMessage = data.detail;
+                        else if (Array.isArray(data.detail)) errorMessage = data.detail.map(e => e.msg).join(', ');
+                    } else if (data && data.message) {
+                        errorMessage = data.message;
+                    }
+                    alert(errorMessage);
+                }
+            } catch (error) {
+                console.error('Error adding product:', error);
+                alert('Network error occurred while adding product.');
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+            }
+        });
+        // Approve Product
+        async function approveProduct(productId) {
+            if (!confirm('Are you sure you want to approve this product?')) return;
+            try {
+                const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v1/admin/products/${productId}/approve`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ status: 'approved', rejection_reason: null })
+                });
+                const data = await response.json();
+                if (response.ok && (data.success || data.message)) {
+                    await fetchProducts();
+                    await fetchAdminAnalytics();
+                    const toastDiv = document.createElement('div');
+                    toastDiv.className = `alert alert-success position-fixed bottom-0 end-0 m-3 shadow-lg`;
+                    toastDiv.style.zIndex = '9999';
+                    toastDiv.innerHTML = `<i class="fas fa-check-circle me-2"></i> ${data.message || 'Product approved'}`;
+                    document.body.appendChild(toastDiv);
+                    setTimeout(() => toastDiv.remove(), 3000);
+                } else {
+                    alert(data.message || 'Failed to approve product.');
+                }
+            } catch (error) {
+                console.error('Error approving product:', error);
+                alert('Network error occurred.');
+            }
+        }
+
+        // Delete Product
+        async function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) return;
+            try {
+                const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v1/products/${productId}`, {
+                    method: 'DELETE',
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await response.json();
+                if (response.ok && (data.success || data.message)) {
+                    await fetchProducts();
+                    await fetchAdminAnalytics();
+                    const toastDiv = document.createElement('div');
+                    toastDiv.className = `alert alert-success position-fixed bottom-0 end-0 m-3 shadow-lg`;
+                    toastDiv.style.zIndex = '9999';
+                    toastDiv.innerHTML = `<i class="fas fa-check-circle me-2"></i> ${data.message || 'Product deleted'}`;
+                    document.body.appendChild(toastDiv);
+                    setTimeout(() => toastDiv.remove(), 3000);
+                } else {
+                    alert(data.message || 'Failed to delete product.');
+                }
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Network error occurred.');
+            }
+        }
+
+        // Auto-populate Add Product Modal Dropdowns
+        document.getElementById('addProductModal')?.addEventListener('show.bs.modal', async function () {
+            // Load Categories
+            try {
+                const catRes = await fetchWithAuth('http://127.0.0.1:8000/api/v1/categories/', { headers: { 'Accept': 'application/json' }});
+                if (catRes.ok) {
+                    let data = await catRes.json();
+                    const categories = Array.isArray(data) ? data : (data.data || []);
+                    const catSelect = document.getElementById('prodCategoryId');
+                    catSelect.innerHTML = '<option value="">Select Category...</option>';
+                    categories.forEach(c => {
+                        catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                    });
+                } else {
+                    document.getElementById('prodCategoryId').innerHTML = '<option value="">Failed to load categories</option>';
+                }
+            } catch(e) { 
+                console.error('Failed to load categories', e); 
+                document.getElementById('prodCategoryId').innerHTML = '<option value="">Error loading categories</option>';
+            }
+            
+            // Load Vendors
+            try {
+                const venRes = await fetchWithAuth('http://127.0.0.1:8000/api/v1/vendors', { headers: { 'Accept': 'application/json' }});
+                if (venRes.ok) {
+                    let data = await venRes.json();
+                    const vendors = Array.isArray(data) ? data : (data.data || data.vendors || []);
+                    const venSelect = document.getElementById('prodVendorId');
+                    venSelect.innerHTML = '<option value="">Select Vendor...</option>';
+                    vendors.forEach(v => {
+                        const name = v.shop_name || (v.user ? v.user.full_name : null) || `Vendor ${v.id}`;
+                        venSelect.innerHTML += `<option value="${v.id}">${name}</option>`;
+                    });
+                } else {
+                    document.getElementById('prodVendorId').innerHTML = '<option value="">Failed to load vendors</option>';
+                }
+            } catch(e) { 
+                console.error('Failed to load vendors', e); 
+                document.getElementById('prodVendorId').innerHTML = '<option value="">Error loading vendors</option>';
+            }
+        });
+
+        // AI Image Generation Logic for Admin Add Product Modal
+        document.addEventListener('DOMContentLoaded', () => {
+            const aiGenerateBtn = document.getElementById('aiGenerateBtn');
+            if (aiGenerateBtn) {
+                aiGenerateBtn.addEventListener('click', async () => {
+                    const prodName = document.getElementById('prodName').value.trim();
+                    const prodShortDesc = document.getElementById('prodShortDesc').value.trim();
+                    
+                    if (!prodName) {
+                        alert('Please enter a product name first to generate an image.');
+                        return;
+                    }
+                    
+                    const prompt = `A professional product photography of ${prodName}. ${prodShortDesc}. High quality, 4k, studio lighting, clean background.`;
+                    
+                    const btnText = document.getElementById('aiGenerateText');
+                    const spinner = document.getElementById('aiGenerateSpinner');
+                    
+                    aiGenerateBtn.disabled = true;
+                    btnText.textContent = 'Generating...';
+                    spinner.classList.remove('d-none');
+                    
+                    try {
+                        const token = localStorage.getItem('accessToken');
+                        const url = new URL('http://127.0.0.1:8000/api/v1/images/generate');
+                        url.searchParams.append('prompt', prompt);
+                        
+                        const response = await fetchWithAuth(url.toString(), {
+                            method: 'GET',
+                            headers: { 'Accept': 'application/json' }
+                        });
+                        
+                        const data = await response.json();
+                        if (response.ok && data.success) {
+                            document.getElementById('prodImageUrl').value = data.image_url;
+                        } else {
+                            alert('Failed to generate image: ' + (data.detail || data.message || 'Unknown error'));
+                        }
+                    } catch (err) {
+                        console.error('Image generation error:', err);
+                        alert('Network error while generating image.');
+                    } finally {
+                        aiGenerateBtn.disabled = false;
+                        btnText.textContent = 'AI Generate';
+                        spinner.classList.add('d-none');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Marketplace</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-color);
+            padding: 2rem 1rem;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .auth-logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            text-decoration: none;
+            display: block;
+        }
+        .auth-logo span {
+            color: var(--text-color);
+        }
+        .form-control-auth {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.25rem;
+        }
+        .form-control-auth:focus {
+            background-color: var(--bg-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            color: var(--text-color);
+        }
+        .btn-auth {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-auth:hover {
+            background-color: var(--primary-hover);
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--text-muted);
+            margin: 1.5rem 0;
+            font-size: 0.875rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .divider:not(:empty)::before {
+            margin-right: .5em;
+        }
+        .divider:not(:empty)::after {
+            margin-left: .5em;
+        }
+        .social-btn {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-weight: 500;
+            width: 100%;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .social-btn:hover {
+            background-color: var(--border-color);
+            color: var(--text-color);
+        }
+        .theme-toggle-auth {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .role-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .role-option {
+            flex: 1;
+            position: relative;
+        }
+        .role-option input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .role-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: var(--bg-color);
+        }
+        .role-option input:checked ~ .role-card {
+            border-color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+        .role-option input:checked ~ .role-card .role-title {
+            color: var(--primary-color);
+        }
+        .role-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+        .role-option input:checked ~ .role-card .role-icon {
+            color: var(--primary-color);
+        }
+        .role-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+
+    <button id="theme-toggle" class="theme-toggle theme-toggle-auth" title="Toggle Theme">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <a href="index.html" class="auth-logo">Marketplace<span>.</span></a>
+            <h2 class="fs-4 fw-bold mb-1 text-center">Create an account</h2>
+            <p class="text-muted text-center mb-4 fs-7">Join our marketplace today</p>
+
+            <form id="registerForm">
+                <!-- Role Selection -->
+                <label class="form-label fs-7 fw-medium text-secondary-custom">I want to sign up as a:</label>
+                <div class="role-selector">
+                    <label class="role-option">
+                        <input type="radio" name="account_role" value="customer" checked>
+                        <div class="role-card">
+                            <i class="fas fa-shopping-bag role-icon"></i>
+                            <div class="role-title">Customer</div>
+                        </div>
+                    </label>
+                    <label class="role-option">
+                        <input type="radio" name="account_role" value="vendor">
+                        <div class="role-card">
+                            <i class="fas fa-store role-icon"></i>
+                            <div class="role-title">Seller</div>
+                        </div>
+                    </label>
+                    <label class="role-option">
+                        <input type="radio" name="account_role" value="admin">
+                        <div class="role-card">
+                            <i class="fas fa-user-shield role-icon"></i>
+                            <div class="role-title">Admin</div>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fs-7 fw-medium text-secondary-custom">First Name</label>
+                        <input type="text" id="regFirstName" class="form-control form-control-auth" placeholder="John" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fs-7 fw-medium text-secondary-custom">Last Name</label>
+                        <input type="text" id="regLastName" class="form-control form-control-auth" placeholder="Doe" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fs-7 fw-medium text-secondary-custom">Email address</label>
+                    <input type="email" id="regEmail" class="form-control form-control-auth" placeholder="name@example.com" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label fs-7 fw-medium text-secondary-custom mb-0">Password</label>
+                    <input type="password" id="regPassword" class="form-control form-control-auth" placeholder="Create a strong password" required>
+                    <div class="fs-8 text-muted mt-1">Must be at least 8 characters long.</div>
+                </div>
+                
+                <div id="regAlert" class="alert d-none fs-7" role="alert"></div>
+
+                <button type="submit" id="regSubmitBtn" class="btn-auth">
+                    <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true" id="regSpinner"></span>
+                    <span id="regBtnText">Create Account</span>
+                </button>
+            </form>
+
+
+
+            <p class="text-center mt-4 mb-0 fs-7 text-secondary-custom">
+                Already have an account? <a href="login.html" class="text-primary fw-bold text-decoration-none">Sign in</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

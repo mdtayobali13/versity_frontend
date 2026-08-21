@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | Marketplace</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .notification-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s;
+        }
+        .notification-item:hover {
+            background-color: #f8fafc;
+        }
+        .notification-item.unread {
+            background-color: rgba(37, 99, 235, 0.03);
+            border-left: 4px solid var(--primary-color);
+        }
+        .notification-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header (Simple version for profile pages) -->
+    <header class="bg-surface border-bottom border-custom sticky-top py-3">
+        <div class="container text-center">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="index.html" class="btn btn-light"><i class="fas fa-arrow-left"></i> Home</a>
+                <a href="index.html" class="navbar-brand m-0">Marketplace<span style="color:var(--text-color);">.</span></a>
+                <div class="d-flex align-items-center">
+                    <a href="profile.html" class="nav-icon"><i class="far fa-user"></i></a>
+                    <button id="theme-toggle" class="theme-toggle ms-4" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0 fs-3">Notifications</h2>
+                    <button class="btn btn-sm btn-outline-secondary">Mark all as read</button>
+                </div>
+
+                <div class="card border-custom shadow-sm overflow-hidden">
+                    
+                    <!-- Notification 1 -->
+                    <div class="notification-item unread d-flex align-items-start">
+                        <div class="notification-icon bg-primary bg-opacity-10 text-primary flex-shrink-0 me-3">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="mb-0 fw-bold">Order Shipped!</h6>
+                                <small class="text-muted fs-7">2 hours ago</small>
+                            </div>
+                            <p class="text-secondary-custom mb-1 fs-7">Your order <strong>#ORD-8452</strong> has been shipped and is on the way. Click to track your package.</p>
+                            <a href="#" class="btn btn-sm btn-light mt-2">Track Order</a>
+                        </div>
+                    </div>
+
+                    <!-- Notification 2 -->
+                    <div class="notification-item d-flex align-items-start">
+                        <div class="notification-icon bg-success bg-opacity-10 text-success flex-shrink-0 me-3">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="mb-0">Mega Discount Alert!</h6>
+                                <small class="text-muted fs-7">Yesterday</small>
+                            </div>
+                            <p class="text-secondary-custom mb-0 fs-7">Get up to 50% off on all electronics items this weekend. Don't miss out on these exclusive deals.</p>
+                        </div>
+                    </div>
+
+                    <!-- Notification 3 -->
+                    <div class="notification-item d-flex align-items-start">
+                        <div class="notification-icon bg-warning bg-opacity-10 text-warning flex-shrink-0 me-3">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="mb-0">Please review your recent purchase</h6>
+                                <small class="text-muted fs-7">3 days ago</small>
+                            </div>
+                            <p class="text-secondary-custom mb-1 fs-7">How do you like your <strong>Sony WH-1000XM4</strong>? Leave a review and earn 50 reward points!</p>
+                            <a href="#" class="btn btn-sm btn-light mt-2">Leave Review</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

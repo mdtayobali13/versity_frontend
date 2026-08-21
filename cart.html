@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | Marketplace</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <!-- Header (Same as index) -->
+    <header class="bg-surface border-bottom border-custom sticky-top py-3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-6 col-lg-2">
+                    <a href="index.html" class="navbar-brand">Marketplace<span style="color:var(--text-color);">.</span></a>
+                </div>
+                <div class="col-12 col-lg-6 d-none d-lg-block">
+                    <form class="d-flex position-relative">
+                        <input type="search" class="form-control search-bar" placeholder="Search products..." aria-label="Search">
+                        <button class="search-btn" type="submit"><i class="fas fa-search"></i></button>
+                    </form>
+                </div>
+                <div class="col-6 col-lg-4 d-flex justify-content-end align-items-center">
+                    <a href="products.html" class="nav-icon d-none d-lg-block me-3 text-secondary-custom">
+                        <i class="fas fa-th-large"></i> <span style="font-size: 0.9rem; margin-left: 5px;">Categories</span>
+                    </a>
+                    <a href="wishlist.html" class="nav-icon">
+                        <i class="far fa-heart"></i>
+                        <span class="badge rounded-pill badge-notification d-none" id="wishlist-badge"></span>
+                    </a>
+                    <a href="cart.html" class="nav-icon ms-4 text-primary">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge rounded-pill badge-notification d-none" id="cart-badge"></span>
+                    </a>
+                    <a href="notifications.html" class="nav-icon ms-4 d-none d-lg-block">
+                        <i class="far fa-bell"></i>
+                        <span class="badge rounded-pill badge-notification d-none" id="notification-badge"></span>
+                    </a>
+                    <a href="profile.html" class="nav-icon ms-4">
+                        <i class="far fa-user"></i>
+                    </a>
+                    <button id="theme-toggle" class="theme-toggle ms-4" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <h2 class="mb-4">Shopping Cart (2 items)</h2>
+
+        <div class="row g-4">
+            <!-- Cart Items -->
+            <div class="col-lg-8" id="cart-items-container">
+                <!-- Vendor Group -->
+                <div class="card border-custom shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom border-custom py-3 d-flex align-items-center">
+                        <i class="fas fa-store text-primary me-2"></i> 
+                        <strong class="me-2">Tech Gadgets BD</strong>
+                        <span class="badge bg-success bg-opacity-10 text-success">Verified</span>
+                    </div>
+                    <div class="card-body">
+                        <!-- Product Item -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-3 col-md-2">
+                                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=200&auto=format&fit=crop" class="img-fluid rounded" alt="Product">
+                            </div>
+                            <div class="col-9 col-md-4">
+                                <h6 class="mb-1">Apple Watch Series 8</h6>
+                                <p class="text-muted fs-7 mb-1">Color: Midnight</p>
+                            </div>
+                            <div class="col-12 col-md-3 mt-3 mt-md-0">
+                                <div class="input-group input-group-sm w-75 mx-md-auto">
+                                    <button class="btn btn-outline-secondary" type="button">-</button>
+                                    <input type="text" class="form-control text-center" value="1">
+                                    <button class="btn btn-outline-secondary" type="button">+</button>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3 mt-3 mt-md-0 text-md-end">
+                                <div class="fw-bold text-primary">৳ 32,500</div>
+                                <button class="btn btn-link text-danger p-0 mt-2 text-decoration-none fs-7"><i class="fas fa-trash me-1"></i> Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vendor Group -->
+                <div class="card border-custom shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom border-custom py-3 d-flex align-items-center">
+                        <i class="fas fa-store text-primary me-2"></i> 
+                        <strong class="me-2">Audio Vision</strong>
+                        <span class="badge bg-success bg-opacity-10 text-success">Verified</span>
+                    </div>
+                    <div class="card-body">
+                        <!-- Product Item -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-3 col-md-2">
+                                <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=200&auto=format&fit=crop" class="img-fluid rounded" alt="Product">
+                            </div>
+                            <div class="col-9 col-md-4">
+                                <h6 class="mb-1">Sony WH-1000XM4</h6>
+                                <p class="text-muted fs-7 mb-1">Color: Black</p>
+                            </div>
+                            <div class="col-12 col-md-3 mt-3 mt-md-0">
+                                <div class="input-group input-group-sm w-75 mx-md-auto">
+                                    <button class="btn btn-outline-secondary" type="button">-</button>
+                                    <input type="text" class="form-control text-center" value="1">
+                                    <button class="btn btn-outline-secondary" type="button">+</button>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3 mt-3 mt-md-0 text-md-end">
+                                <div class="fw-bold text-primary">৳ 25,500</div>
+                                <button class="btn btn-link text-danger p-0 mt-2 text-decoration-none fs-7"><i class="fas fa-trash me-1"></i> Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="card border-custom shadow-sm sticky-top" style="top: 100px;">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-4">Order Summary</h5>
+                        
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-secondary-custom" id="summary-items">Subtotal (2 items)</span>
+                            <span class="fw-bold" id="summary-subtotal">৳ 58,000</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-secondary-custom">Shipping</span>
+                            <span class="fw-bold text-success" id="summary-shipping">Free</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-secondary-custom">Tax</span>
+                            <span class="fw-bold" id="summary-tax">৳ 1,200</span>
+                        </div>
+                        
+                        <hr class="border-custom">
+                        
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="fw-bold fs-5">Total</span>
+                            <span class="fw-bold fs-5 text-primary" id="summary-total">৳ 59,200</span>
+                        </div>
+
+                        <a href="checkout.html" class="btn btn-primary-custom w-100 py-3">Proceed to Checkout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
